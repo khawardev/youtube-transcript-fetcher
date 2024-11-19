@@ -1,8 +1,8 @@
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
-import os
-from dotenv import load_dotenv
-load_dotenv()
+# import os
+# from dotenv import load_dotenv
+# load_dotenv()
 
 # Function to extract playlist ID from URL
 def extract_playlist_id(playlist_url):

@@ -1,10 +1,8 @@
-import streamlit as st
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 # import os
 # from dotenv import load_dotenv
 # load_dotenv()
-youtube_secret = st.secrets["general"]["YOUTUBE_SECRET"]
 
 # Function to extract playlist ID from URL
 def extract_playlist_id(playlist_url):
@@ -18,7 +16,7 @@ def fetch_playlist_data(playlist_url):
     if not playlist_id:
         return None
     
-    youtube = build('youtube', 'v3', developerKey=youtube_secret)
+    youtube = build('youtube', 'v3', developerKey='AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s')
     
     # Get videos in the playlist
     video_response = youtube.playlistItems().list(

@@ -15,7 +15,7 @@ def extract_channel_id(channel_url):
 
 # Function to get channel ID from username
 def get_channel_id_from_username(username):
-    youtube = build('youtube', 'v3', developerKey=os.getenv('YOUTUBE_SECRET'))
+    youtube = build('youtube', 'v3', developerKey='AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s')
     search_response = youtube.search().list(
         part='snippet',
         q=username,
@@ -33,7 +33,7 @@ def fetch_channel_data(channel_url):
     if not channel_id:
         return None
     
-    youtube = build('youtube', 'v3', developerKey=os.getenv('YOUTUBE_SECRET'))
+    youtube = build('youtube', 'v3', developerKey='AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s')
     
     # Get channel details
     channel_response = youtube.channels().list(part='snippet', id=channel_id).execute()

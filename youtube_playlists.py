@@ -16,7 +16,7 @@ def fetch_playlist_data(playlist_url):
     if not playlist_id:
         return None
     
-    youtube = build('youtube', 'v3', developerKey=os.getenv('YOUTUBE_SECRET'))
+    youtube = build('youtube', 'v3', developerKey='AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s')
     
     # Get videos in the playlist
     video_response = youtube.playlistItems().list(

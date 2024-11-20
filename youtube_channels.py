@@ -53,26 +53,22 @@ def fetch_channel_data(channel_url):
         video_id = video['id'].get('videoId', None)
         video_title = video['snippet']['title']
         
-        # Fetch video details to check duration
-        video_details = youtube.videos().list(part='contentDetails', id=video_id).execute()
-        if video_details['items']:
-            duration = video_details['items'][0]['contentDetails']['duration']
-            
-            # YouTube duration format is in ISO 8601 (e.g., PT1H2M3S for 1 hour, 2 minutes, 3 seconds)
-            # Checking if duration is greater than 1 minute (not a short)
-            if 'M' in duration:  # Simple check for minute duration
-                transcript_text = ""
-                try:
-                    transcript = YouTubeTranscriptApi.get_transcript(video_id)
-                    transcript_text = ' '.join([entry['text'] for entry in transcript])
-                except Exception as e:
-                    transcript_text = f"Error fetching transcript: {e}"
-                return {
-                    'SP_Channel_URL': channel_url,
-                    'SP_Channel_Title': channel_info['title'],
-                    'SP_Latest_Video_Title': video_title,
-                    'SP_Video_URL': f"https://www.youtube.com/watch?v={video_id}",
-                    'SP_Video_Transcript': transcript_text[:50000]
-                }
+        # video_details = youtube.videos().list(part='contentDetails', id=video_id).execute()
+        # if video_details['items']:
+            # duration = video_details['items'][0]['contentDetails']['duration']
+            # if 'M' in duration:  # Simple check for minute duration
+        transcript_text = ""
+        try:
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            transcript_text = ' '.join([entry['text'] for entry in transcript])
+        except Exception as e:
+            transcript_text = f"Error fetching transcript"
+        return {
+            'SP_Channel_URL': channel_url,
+            'SP_Channel_Title': channel_info['title'],
+            'SP_Latest_Video_Title': video_title,
+            'SP_Video_URL': f"https://www.youtube.com/watch?v={video_id}",
+            'SP_Video_Transcript': transcript_text[:50000]
+            }
     
     return None

@@ -3,13 +3,17 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 from youtube_channels import fetch_channel_data
 from youtube_playlists import fetch_playlist_data
-
+import sys
+import platform
 # Initialize session state for YouTube data
 if 'updated_youtube_data' not in st.session_state:
     st.session_state.updated_youtube_data = None
 
 # Set a more engaging and descriptive title
 st.title("📺 YouTube Transcripts Fetcher")
+
+
+
 
 st.markdown("""
 Welcome to the YouTube Transcripts Fetcher! 📄 This app allows you to fetch and update YouTube channel and playlist transcripts effortlessly. 

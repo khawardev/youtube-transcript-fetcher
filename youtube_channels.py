@@ -1,8 +1,6 @@
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
-# import os
-# from dotenv import load_dotenv
-# load_dotenv()
+API_KEY = 'AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s'
 
 # Function to extract channel ID from URL
 def extract_channel_id(channel_url):
@@ -15,7 +13,7 @@ def extract_channel_id(channel_url):
 
 # Function to get channel ID from username
 def get_channel_id_from_username(username):
-    youtube = build('youtube', 'v3', developerKey='AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s')
+    youtube = build('youtube', 'v3', developerKey=API_KEY)
     search_response = youtube.search().list(
         part='snippet',
         q=username,
@@ -33,7 +31,7 @@ def fetch_channel_data(channel_url):
     if not channel_id:
         return None
     
-    youtube = build('youtube', 'v3', developerKey='AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s')
+    youtube = build('youtube', 'v3', developerKey=API_KEY)
     
     # Get channel details
     channel_response = youtube.channels().list(part='snippet', id=channel_id).execute()
@@ -69,7 +67,6 @@ def fetch_channel_data(channel_url):
                     transcript_text = ' '.join([entry['text'] for entry in transcript])
                 except Exception as e:
                     transcript_text = f"Error fetching transcript: {e}"
-                
                 return {
                     'SP_Channel_URL': channel_url,
                     'SP_Channel_Title': channel_info['title'],

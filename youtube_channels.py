@@ -1,74 +1,41 @@
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
+import logging
+
 API_KEY = 'AIzaSyAMmJwm780uNHbVS60CmwbO-SbpC8ZaT2s'
 
-# Function to extract channel ID from URL
-def extract_channel_id(channel_url):
-    if 'channel/' in channel_url:
-        return channel_url.split('channel/')[1].split('/')[0]
-    elif '@' in channel_url:
-        username = channel_url.split('@')[1].split('/')[0]
-        return get_channel_id_from_username(username)
-    return None
-
-# Function to get channel ID from username
-def get_channel_id_from_username(username):
-    youtube = build('youtube', 'v3', developerKey=API_KEY)
-    search_response = youtube.search().list(
-        part='snippet',
-        q=username,
-        type='channel',
-        maxResults=1
-    ).execute()
-    
-    if 'items' in search_response and search_response['items']:
-        return search_response['items'][0]['snippet']['channelId']
-    return None
-
-# Function to fetch channel info and latest video details
 def fetch_channel_data(channel_url):
+    def extract_channel_id(channel_url):
+        if 'channel/' in channel_url:
+            return channel_url.split('channel/')[1].split('/')[0]
+        return None
+
     channel_id = extract_channel_id(channel_url)
     if not channel_id:
         return None
-    
+
     youtube = build('youtube', 'v3', developerKey=API_KEY)
-    
-    # Get channel details
-    channel_response = youtube.channels().list(part='snippet', id=channel_id).execute()
-    if not channel_response['items']:
-        return None
-    
-    channel_info = channel_response['items'][0]['snippet']
-    
-    # Get latest video details
-    video_response = youtube.search().list(
-        part='snippet', channelId=channel_id, maxResults=5, order='date'
-    ).execute()
-    
-    if not video_response['items']:
-        return None
-    
-    # Check if the latest video is long-form (not a short)
-    for video in video_response['items']:
-        video_id = video['id'].get('videoId', None)
-        video_title = video['snippet']['title']
-        
-        # video_details = youtube.videos().list(part='contentDetails', id=video_id).execute()
-        # if video_details['items']:
-            # duration = video_details['items'][0]['contentDetails']['duration']
-            # if 'M' in duration:  # Simple check for minute duration
-        transcript_text = ""
-        try:
-            transcript = YouTubeTranscriptApi.get_transcript(video_id)
-            transcript_text = ' '.join([entry['text'] for entry in transcript])
-        except Exception as e:
-            transcript_text = f"Error fetching transcript"
-        return {
-            'SP_Channel_URL': channel_url,
-            'SP_Channel_Title': channel_info['title'],
-            'SP_Latest_Video_Title': video_title,
-            'SP_Video_URL': f"https://www.youtube.com/watch?v={video_id}",
-            'SP_Video_Transcript': transcript_text[:50000]
+
+    try:
+        channel_response = youtube.channels().list(part='snippet', id=channel_id).execute()
+        channel_info = channel_response['items'][0]['snippet']
+
+        video_response = youtube.search().list(part='snippet', channelId=channel_id, maxResults=5, order='date').execute()
+        for video in video_response['items']:
+            video_id = video['id']['videoId']
+            transcript_text = ""
+            try:
+                transcript = YouTubeTranscriptApi.get_transcript(video_id)
+                transcript_text = ' '.join([entry['text'] for entry in transcript])[:50000]
+            except Exception as e:
+                transcript_text = f"Error: {e}"
+            return {
+                'SP_Channel_URL': channel_url,
+                'SP_Channel_Title': channel_info['title'],
+                'SP_Latest_Video_Title': video['snippet']['title'],
+                'SP_Video_URL': f"https://www.youtube.com/watch?v={video_id}",
+                'SP_Video_Transcript': transcript_text
             }
-    
-    return None
+    except Exception as e:
+        logging.error(f"Error fetching channel data: {e}")
+        return None
